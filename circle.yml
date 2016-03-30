@@ -1,0 +1,13 @@
+machine: 
+  java: 
+    version: oraclejdk8
+
+test:
+ override:
+   - gradle clean build
+
+deployment:
+  staging:
+    branch: master
+    heroku:
+      appname: prorata-api
