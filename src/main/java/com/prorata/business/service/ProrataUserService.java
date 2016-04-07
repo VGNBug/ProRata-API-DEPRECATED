@@ -58,14 +58,18 @@ public interface ProrataUserService
 	 * actively check whether or not the password matches before returning the
 	 * user.
 	 * 
-	 * @param credentials
-	 *            A {java.util.Map Map} containing the email address and
-	 *            password of the {@link com.prorata.model.ProrataUser
-	 *            ProrataUser} to be returned.
+	 * @param emailHash
+	 *         An encoded representation of the 
+	 *         {@link com.prorata.model.jpa.ProrataUserEntity#email}
+	 *         of the ProrataUser to be retrieved.
+	 * @param passwordHash
+	 *         An encoded representation of the 
+	 *         {@link com.prorata.model.jpa.ProrataUserEntity#password}
+	 *         of the ProrataUser to be retrieved.
 	 * @return The {@link com.prorata.model.jpa.ProrataUserEntity
 	 *         ProrataUserEntity} containing the user data requested.
 	 */
-	ProrataUserEntity signIn(ProrataUserEntity credentials);
+	ProrataUserEntity signIn(String emailHash, String passwordHash);
 	
 	/**
 	 * Will remove the supplied {@link com.prorata.model.jpa.ProrataUserEntity
