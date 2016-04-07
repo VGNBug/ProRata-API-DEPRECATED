@@ -94,7 +94,7 @@ public class ProrataUserRestController
 								 )throws ProrataUserNotFoundException
 	//@formatter:on
 	{
-		return prorataUserService.signIn(mapper.convertValue(credentials, ProrataUserEntity.class));
+		return prorataUserService.signIn(emailHash, passwordHash);
 	}
 	
 	/**
