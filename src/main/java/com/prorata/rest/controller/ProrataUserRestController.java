@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -72,19 +73,26 @@ public class ProrataUserRestController
 	 * returned JSON object.
 	 * </p>
 	 * 
-	 * @param credentials
-	 *            A map of the {@link com.prorata.model.jpa.Prorata#email email}
-	 *            and {@link com.prorata.model.jpa.Prorata#password password}
-	 *            expected of the {@link com.prorata.model.jpa.ProrataUserEntity
-	 *            ProrataUserEntity} to be returned, as strings.
+	 * @param emailHash
+	 *         An encoded representation of the 
+	 *         {@link com.prorata.model.jpa.ProrataUserEntity#email}
+	 *         of the ProrataUser to be retrieved.
+	 * @param passwordHash
+	 *         An encoded representation of the 
+	 *         {@link com.prorata.model.jpa.ProrataUserEntity#password}
+	 *         of the ProrataUser to be retrieved.
 	 * @return A {@link com.prorata.model.jpa.ProrataUserEntity
 	 *         ProrataUserEntity} which matches the credentials, if one can be
 	 *         found.
 	 */
-	@RequestMapping(value = "/read", method = RequestMethod.POST)
+	@RequestMapping(value = "/emailHash{emailHash}/passwordHash{passwordHash}", method = RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
-	public ProrataUserEntity read(final @RequestBody Map<String, Object> credentials)
-			throws ProrataUserNotFoundException
+	//@formatter:off
+	public ProrataUserEntity read(
+									@PathVariable String emailHash, 
+									@PathVariable String passwordHash
+								 )throws ProrataUserNotFoundException
+	//@formatter:on
 	{
 		return prorataUserService.signIn(mapper.convertValue(credentials, ProrataUserEntity.class));
 	}

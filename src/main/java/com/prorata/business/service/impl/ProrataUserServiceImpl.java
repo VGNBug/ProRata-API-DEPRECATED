@@ -4,35 +4,15 @@
  */
 package com.prorata.business.service.impl;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.hibernate.Hibernate;
-import org.springframework.dao.DataRetrievalFailureException;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.prorata.business.service.ProrataUserService;
-import com.prorata.data.repository.jpa.AccountJpaRepository;
-import com.prorata.data.repository.jpa.BankJpaRepository;
-import com.prorata.data.repository.jpa.EmployerJpaRepository;
-import com.prorata.data.repository.jpa.EmploymentJpaRepository;
-import com.prorata.data.repository.jpa.ProrataUserJpaRepository;
-import com.prorata.data.repository.jpa.SubscriptionJpaRepository;
-import com.prorata.data.repository.jpa.SubscriptionTypeJpaRepository;
-import com.prorata.data.repository.jpa.UserContactJpaRepository;
-import com.prorata.model.jpa.AccountEntity;
-import com.prorata.model.jpa.EmployerEntity;
-import com.prorata.model.jpa.EmploymentEntity;
-import com.prorata.model.jpa.ProrataUserEntity;
-import com.prorata.model.jpa.SubscriptionEntity;
-import com.prorata.model.jpa.SubscriptionTypeEntity;
-import com.prorata.model.jpa.UserContactEntity;
+import com.prorata.business.service.*;
+import com.prorata.data.repository.jpa.*;
+import com.prorata.model.jpa.*;
+import java.util.*;
+import javax.annotation.*;
+import org.apache.commons.logging.*;
+import org.springframework.dao.*;
+import org.springframework.stereotype.*;
+import org.springframework.transaction.annotation.*;
 
 /**
  * Implementation of {@link com.prorata.buisiness.service.ProrataUserService
@@ -66,6 +46,9 @@ public class ProrataUserServiceImpl implements ProrataUserService
 	
 	@Resource
 	private BankJpaRepository bankJpaRepository;
+	
+	@Resource
+	private HashService hashService;
 	
 	/**
 	 * {@inheritDoc}
@@ -241,16 +224,19 @@ public class ProrataUserServiceImpl implements ProrataUserService
 	 */
 	@Override
 	@Transactional
-	public ProrataUserEntity signIn(ProrataUserEntity credentials)
+	public ProrataUserEntity signIn(String emailHash, String passwordHash)
 	{
 		String stateMessage = null;
 		
-		if (credentials != null)
+		if (emailHash != null && passwordHash != null)
 		{
-			if (credentials.getEmail() != null && credentials.getPassword() != null)
+			String email = hashService.decode(emailHash);
+			String password = hashService.decode(passwordHash);
+			
+			if (email != null && passwordHash != null)
 			{
 				// Get the user
-				ProrataUserEntity response = checkCredentials(credentials.getEmail(), credentials.getPassword());
+				ProrataUserEntity response = checkCredentials(email, password);
 				
 				// Check that the user returned is not null, and report on it.
 				if (response != null)
@@ -268,14 +254,14 @@ public class ProrataUserServiceImpl implements ProrataUserService
 					throw e;
 				}
 			}
-			else if (credentials.getEmail() != null && credentials.getPassword() == null)
+			else if (email != null && password == null)
 			{
 				stateMessage = "Read user failed: password cannot be null.";
 				IllegalArgumentException e = new IllegalArgumentException(stateMessage);
 				LOGGER.error(e);
 				throw e;
 			}
-			else if (credentials.getEmail() == null && credentials.getPassword() != null)
+			else if (email == null && password != null)
 			{
 				stateMessage = "Read user failed: email cannot be null.";
 				IllegalArgumentException e = new IllegalArgumentException(stateMessage);
