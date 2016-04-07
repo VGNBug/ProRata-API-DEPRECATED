@@ -54,7 +54,7 @@ public class ProrataUserRestController
 			throws ProrataUserServiceErrorException
 	{
 		prorataUserService.create(mapper.convertValue(userMap, ProrataUserEntity.class));
-		return prorataUserService.signIn(mapper.convertValue(userMap, ProrataUserEntity.class));
+		return prorataUserService.signIn((String)userMap.get("email"), (String)userMap.get("password"));
 	}
 	
 	/**
