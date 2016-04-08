@@ -1,6 +1,6 @@
 package com.prorata.business.service.impl;
 
-import com.prorata.buisiness.service.HashService;
+import com.prorata.business.service.HashService;
 
 /**
  * {@inheritDoc}
