@@ -13,6 +13,7 @@ import org.apache.commons.logging.*;
 import org.springframework.dao.*;
 import org.springframework.stereotype.*;
 import org.springframework.transaction.annotation.*;
+import org.hibernate.*;
 
 /**
  * Implementation of {@link com.prorata.buisiness.service.ProrataUserService
