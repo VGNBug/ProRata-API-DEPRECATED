@@ -21,4 +21,5 @@ general:
 
 general:
   artifacts:
-    - "reports/tests/index.html" # Gradle test results
+  - "~/ubuntu/ProRata-API/build/reports/tests/index.html"
+#    - "reports/tests/index.html" # Gradle test results
