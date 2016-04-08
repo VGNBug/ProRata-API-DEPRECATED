@@ -15,6 +15,9 @@ deployment:
     branch: integration
     heroku:
       appname: prorata-api-staging
+      
+general:
+  build_dir: build
 
 general:
   artifacts:
