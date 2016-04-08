@@ -15,3 +15,7 @@ deployment:
     branch: integration
     heroku:
       appname: prorata-api-staging
+
+general:
+  artifacts:
+    -/home/ubuntu/ProRata-API/build/reports/tests/index.html
