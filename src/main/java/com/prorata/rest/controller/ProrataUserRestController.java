@@ -43,16 +43,11 @@ public class ProrataUserRestController
 	 * ProrataUserEntity}, returning it if successful.
 	 * </p>
 	 * 
-	 * <p>
-	 * This method cannot post collections into the persisted entity; those have
-	 * to be posted separately via their respective controllers.
-	 * </p>
-	 * 
 	 * @param user
 	 *            The user to be created.
 	 * @return The created user, if successful.
 	 */
-	@RequestMapping(value = "/create", method = RequestMethod.POST)
+	@RequestMapping(method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
 	public ProrataUserEntity create(final @RequestBody Map<String, Object> userMap)
 			throws ProrataUserServiceErrorException
