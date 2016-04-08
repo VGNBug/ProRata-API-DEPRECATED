@@ -17,6 +17,7 @@ import com.prorata.business.service.ProrataUserService;
 import com.prorata.model.jpa.ProrataUserEntity;
 import com.prorata.rest.exception.proratauser.ProrataUserNotFoundException;
 import com.prorata.rest.exception.proratauser.ProrataUserServiceErrorException;
+import com.prorata.business.service.*;
 
 @RestController
 @RequestMapping(value = "/prorataUser")
@@ -26,6 +27,9 @@ public class ProrataUserRestController
 	
 	@Autowired
 	private ProrataUserService prorataUserService;
+	
+	@Autowired
+	private HashService hashService;
 	
 	public ProrataUserRestController()
 	{
@@ -94,7 +98,7 @@ public class ProrataUserRestController
 								 )throws ProrataUserNotFoundException
 	//@formatter:on
 	{
-		return prorataUserService.signIn(emailHash, passwordHash);
+		return prorataUserService.signIn(hashService.decode(emailHash), hashService.decode(passwordHash));
 	}
 	
 	/**
@@ -117,13 +121,13 @@ public class ProrataUserRestController
 	 *         ProrataUserEntity}.
 	 * @throws ProrataUserServiceErrorException
 	 */
-	@RequestMapping(value = "/update", method = RequestMethod.POST)
+	@RequestMapping(method = RequestMethod.PUT)
 	@ResponseStatus(HttpStatus.OK)
 	public ProrataUserEntity update(final @RequestBody Map<String, Object> userMap)
 			throws ProrataUserServiceErrorException
 	{
 		prorataUserService.update(mapper.convertValue(userMap, ProrataUserEntity.class));
-		return prorataUserService.signIn(mapper.convertValue(userMap, ProrataUserEntity.class));
+		return prorataUserService.signIn((String)userMap.get("email"), (String)userMap.get("password"));
 	}
 	
 	/**
@@ -136,7 +140,7 @@ public class ProrataUserRestController
 	 *            and {@link com.prorata.model.jpa.ProrataUserEntity#password
 	 *            password} for the user to be deleted.
 	 */
-	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
+	@RequestMapping(method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void delete(final @RequestBody Map<String, Object> credentials) throws ProrataUserServiceErrorException
 	{

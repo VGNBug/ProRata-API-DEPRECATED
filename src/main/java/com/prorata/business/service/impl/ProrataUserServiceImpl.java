@@ -22,34 +22,31 @@ import org.springframework.transaction.annotation.*;
 public class ProrataUserServiceImpl implements ProrataUserService
 {
 	private static final Log LOGGER = LogFactory.getLog(ProrataUserService.class);
-	
+
 	@Resource
 	private ProrataUserJpaRepository prorataUserJpaRepository;
-	
+
 	@Resource
 	private SubscriptionTypeJpaRepository subscriptionTypeJpaRepository;
-	
+
 	@Resource
 	private SubscriptionJpaRepository subscriptionJpaRepository;
-	
+
 	@Resource
 	private AccountJpaRepository accountJpaRepository;
-	
+
 	@Resource
 	private EmploymentJpaRepository employmentJpaRepository;
-	
+
 	@Resource
 	private EmployerJpaRepository employerJpaRepository;
-	
+
 	@Resource
 	private UserContactJpaRepository userContactJpaRepository;
-	
+
 	@Resource
 	private BankJpaRepository bankJpaRepository;
-	
-	@Resource
-	private HashService hashService;
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -58,15 +55,15 @@ public class ProrataUserServiceImpl implements ProrataUserService
 	public ProrataUserEntity findById(Integer prorataUserId)
 	{
 		String stateMessage = null;
-		
+
 		if (prorataUserId != null)
 		{
 			ProrataUserEntity response = prorataUserJpaRepository.findOne(prorataUserId);
-			
+
 			if (response != null)
 			{
 				LOGGER.info("Retrieved user with ID " + prorataUserId + " with the following details: "
-						+ response.toString());
+							+ response.toString());
 				return response;
 			}
 			else
@@ -85,7 +82,7 @@ public class ProrataUserServiceImpl implements ProrataUserService
 			throw e;
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -94,15 +91,15 @@ public class ProrataUserServiceImpl implements ProrataUserService
 	public List<ProrataUserEntity> findAll()
 	{
 		List<ProrataUserEntity> response = new ArrayList<>();
-		
+
 		for (ProrataUserEntity entity : prorataUserJpaRepository.findAll())
 		{
 			response.add(entity);
 		}
-		
+
 		return response;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -111,30 +108,30 @@ public class ProrataUserServiceImpl implements ProrataUserService
 	public ProrataUserEntity create(ProrataUserEntity user)
 	{
 		String stateMessage = null;
-		
+
 		if (user != null)
 		{
 			if (user.getEmail() != null && user.getPassword() != null)
 			{
 				// Create the user.
 				ProrataUserEntity response = prorataUserJpaRepository.save(user);
-				
+
 				if (response != null)
 				{
 					stateMessage = "User with email " + user.getEmail() + " created successfully. State is as follows: "
-							+ user.toString();
+						+ user.toString();
 					LOGGER.info(stateMessage);
-					
+
 					// Persist all collections included with this user.
 					persistCollections(user, response);
-					
+
 					// Set the user with a default subscription if they do not
 					// have one included.
 					if (user.getListOfSubscription() == null || user.getListOfSubscription().isEmpty())
 					{
 						this.setSubscription(response, 0);
 					}
-					
+
 					return this.initializeCollections(response);
 				}
 				else
@@ -175,7 +172,7 @@ public class ProrataUserServiceImpl implements ProrataUserService
 			throw e;
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -184,21 +181,21 @@ public class ProrataUserServiceImpl implements ProrataUserService
 	public ProrataUserEntity update(ProrataUserEntity user)
 	{
 		String stateMessage = null;
-		
+
 		if (user != null && user.getEmail() != null && user.getPassword() != null)
 		{
 			ProrataUserEntity checkedUser = checkCredentials(user.getEmail(), user.getPassword());
-			
+
 			if (checkedUser != null)
 			{
 				user.setProrataUserId(checkedUser.getProrataUserId());
-				
+
 				// Update the user.
 				ProrataUserEntity persistedUser = prorataUserJpaRepository.save(user);
-				
+
 				// Persist all collections included with this user.
 				persistCollections(user, persistedUser);
-				
+
 				return persistedUser;
 			}
 			else
@@ -208,7 +205,7 @@ public class ProrataUserServiceImpl implements ProrataUserService
 				LOGGER.error(stateMessage, e);
 				throw e;
 			}
-			
+
 		}
 		else
 		{
@@ -218,73 +215,61 @@ public class ProrataUserServiceImpl implements ProrataUserService
 			throw e;
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	@Transactional
-	public ProrataUserEntity signIn(String emailHash, String passwordHash)
+	public ProrataUserEntity signIn(String email, String password)
 	{
 		String stateMessage = null;
-		
-		if (emailHash != null && passwordHash != null)
+
+		if (email != null && password != null)
 		{
-			String email = hashService.decode(emailHash);
-			String password = hashService.decode(passwordHash);
-			
-			if (email != null && passwordHash != null)
+			// Get the user
+			ProrataUserEntity response = checkCredentials(email, password);
+
+			// Check that the user returned is not null, and report on it.
+			if (response != null)
 			{
-				// Get the user
-				ProrataUserEntity response = checkCredentials(email, password);
-				
-				// Check that the user returned is not null, and report on it.
-				if (response != null)
-				{
-					stateMessage = "User with the following details was recovered by " + this.getClass().getSimpleName()
-							+ ": " + response.toString();
-					LOGGER.info(stateMessage);
-					return response;
-				}
-				else
-				{
-					stateMessage = "User was not recovered successfully.";
-					DataRetrievalFailureException e = new DataRetrievalFailureException(stateMessage);
-					LOGGER.error(e);
-					throw e;
-				}
-			}
-			else if (email != null && password == null)
-			{
-				stateMessage = "Read user failed: password cannot be null.";
-				IllegalArgumentException e = new IllegalArgumentException(stateMessage);
-				LOGGER.error(e);
-				throw e;
-			}
-			else if (email == null && password != null)
-			{
-				stateMessage = "Read user failed: email cannot be null.";
-				IllegalArgumentException e = new IllegalArgumentException(stateMessage);
-				LOGGER.error(e);
-				throw e;
+				stateMessage = "User with the following details was recovered by " + this.getClass().getSimpleName()
+					+ ": " + response.toString();
+				LOGGER.info(stateMessage);
+				return response;
 			}
 			else
 			{
-				stateMessage = "Read user failed: email and password must be provided.";
-				IllegalArgumentException e = new IllegalArgumentException(stateMessage);
+				stateMessage = "User was not recovered successfully.";
+				DataRetrievalFailureException e = new DataRetrievalFailureException(stateMessage);
 				LOGGER.error(e);
 				throw e;
 			}
 		}
-		else
+		else if (email != null && password == null)
 		{
-			stateMessage = "User credentials must be supplied to allow access to user data.";
+			stateMessage = "Read user failed: password cannot be null.";
 			IllegalArgumentException e = new IllegalArgumentException(stateMessage);
 			LOGGER.error(e);
 			throw e;
 		}
+		else if (email == null && password != null)
+		{
+			stateMessage = "Read user failed: email cannot be null.";
+			IllegalArgumentException e = new IllegalArgumentException(stateMessage);
+			LOGGER.error(e);
+			throw e;
+		}
+		else
+		{
+			stateMessage = "Read user failed: email and password must be provided.";
+			IllegalArgumentException e = new IllegalArgumentException(stateMessage);
+			LOGGER.error(e);
+			throw e;
+		}
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -293,17 +278,17 @@ public class ProrataUserServiceImpl implements ProrataUserService
 	public String delete(ProrataUserEntity credentials)
 	{
 		String stateMessage = null;
-		
+
 		if (credentials != null && credentials.getEmail() != null && credentials.getPassword() != null)
 		{
 			// Delete the user.
 			prorataUserJpaRepository.delete(checkCredentials(credentials.getEmail(), credentials.getPassword()));
-			
+
 			stateMessage = "User with email " + credentials.getEmail() + " deleted successfully.";
 			LOGGER.info(stateMessage);
 			return stateMessage;
 		}
-		
+
 		else if (credentials.getEmail() == null && credentials.getPassword() != null)
 		{
 			stateMessage = "delete user failed: Email cannot be null.";
@@ -326,7 +311,7 @@ public class ProrataUserServiceImpl implements ProrataUserService
 			throw e;
 		}
 	}
-	
+
 	/**
 	 * Will retrieve a user with an email and password which match those
 	 * supplied.
@@ -346,11 +331,11 @@ public class ProrataUserServiceImpl implements ProrataUserService
 	private ProrataUserEntity checkCredentials(String email, String password)
 	{
 		ProrataUserEntity response = null;
-		
+
 		if (email != null && password != null)
 		{
 			ProrataUserEntity matchByEmail = this.prorataUserJpaRepository.findByEmail(email);
-			
+
 			if (matchByEmail != null && password.equals(matchByEmail.getPassword()))
 			{
 				response = this.initializeCollections(matchByEmail);
@@ -363,10 +348,10 @@ public class ProrataUserServiceImpl implements ProrataUserService
 				throw e;
 			}
 		}
-		
+
 		return response;
 	}
-	
+
 	/**
 	 * This will set a {@link com.prorata.model.jpa.SubscriptionEntity
 	 * subscription} on a persisted
@@ -390,20 +375,20 @@ public class ProrataUserServiceImpl implements ProrataUserService
 	private SubscriptionEntity setSubscription(ProrataUserEntity user, Integer subscriptionTypeId)
 	{
 		String stateMessage = null;
-		
+
 		if (user.getProrataUserId() != null && subscriptionTypeJpaRepository.findOne(subscriptionTypeId) != null)
 		{
 			SubscriptionTypeEntity subType = subscriptionTypeJpaRepository.findOne(subscriptionTypeId);
-			
+
 			SubscriptionEntity subscription = new SubscriptionEntity();
 			subscription.setProrataUser(user);
 			subscription.setSubscriptionType(subscriptionTypeJpaRepository.findOne(subscriptionTypeId));
 			subscription.setStartDateTime(Calendar.getInstance().getTime());
-			
+
 			stateMessage = "A subscription with the following type was added to the user with ID + "
-					+ user.getProrataUserId() + ": " + subType.toString();
+				+ user.getProrataUserId() + ": " + subType.toString();
 			LOGGER.info(stateMessage);
-			
+
 			return this.subscriptionJpaRepository.save(subscription);
 		}
 		else if (user.getProrataUserId() == null)
@@ -428,7 +413,7 @@ public class ProrataUserServiceImpl implements ProrataUserService
 			throw e;
 		}
 	}
-	
+
 	/**
 	 * Persists all entities in collections held by the
 	 * {@link com.prorata.model.jpa.ProrataUserEntity user}.
@@ -441,7 +426,7 @@ public class ProrataUserServiceImpl implements ProrataUserService
 	private void persistCollections(ProrataUserEntity user, ProrataUserEntity persistedUser)
 	{
 		String stateMessage = null;
-		
+
 		if (user != null && persistedUser.getProrataUserId() != null)
 		{
 			if (user.getListOfAccount() != null)
@@ -454,7 +439,7 @@ public class ProrataUserServiceImpl implements ProrataUserService
 					account.setProrataUser(persistedUser);
 					accountJpaRepository.save(account);
 					LOGGER.info("Added the following account to user with ID " + user.getProrataUserId() + ": "
-							+ account.toString());
+								+ account.toString());
 				}
 			}
 			if (user.getListOfEmployment() != null)
@@ -462,7 +447,7 @@ public class ProrataUserServiceImpl implements ProrataUserService
 				for (EmploymentEntity employment : user.getListOfEmployment())
 				{
 					EmployerEntity employer = null;
-					
+
 					if (employment.getEmployer() != null)
 					{
 						employer = employment.getEmployer();
@@ -475,11 +460,11 @@ public class ProrataUserServiceImpl implements ProrataUserService
 						employerJpaRepository.save(employer);
 						LOGGER.info("Created employer for employent " + employment.toString());
 					}
-					
+
 					employment.setProrataUser(persistedUser);
 					employmentJpaRepository.save(employment);
 					LOGGER.info("Added the following account to user with ID " + user.getProrataUserId() + ": "
-							+ employment.toString());
+								+ employment.toString());
 				}
 			}
 			if (user.getListOfSubscription() != null)
@@ -491,7 +476,7 @@ public class ProrataUserServiceImpl implements ProrataUserService
 						subscription.setProrataUser(persistedUser);
 						subscriptionJpaRepository.save(subscription);
 						LOGGER.info("Added the following subscription to user with ID " + user.getProrataUserId() + ": "
-								+ subscription.toString());
+									+ subscription.toString());
 					}
 				}
 			}
@@ -502,7 +487,7 @@ public class ProrataUserServiceImpl implements ProrataUserService
 					contact.setProrataUser(persistedUser);
 					userContactJpaRepository.save(contact);
 					LOGGER.info("Added the following contact to user with ID " + user.getProrataUserId() + ": "
-							+ contact.toString());
+								+ contact.toString());
 				}
 			}
 		}
@@ -521,7 +506,7 @@ public class ProrataUserServiceImpl implements ProrataUserService
 			throw e;
 		}
 	}
-	
+
 	/**
 	 * Calls {@link org.hibernate.Hibernate#initialize(Object)} on all
 	 * collections within a supplied
@@ -540,7 +525,7 @@ public class ProrataUserServiceImpl implements ProrataUserService
 		Hibernate.initialize(user.getListOfAccount());
 		Hibernate.initialize(user.getListOfEmployment());
 		Hibernate.initialize(user.getListOfUserContact());
-		
+
 		if (user.getListOfEmployment() != null)
 		{
 			for (EmploymentEntity employment : user.getListOfEmployment())
@@ -551,7 +536,7 @@ public class ProrataUserServiceImpl implements ProrataUserService
 				Hibernate.initialize(employment.getEmployer());
 			}
 		}
-		
+
 		return user;
 	}
 }
