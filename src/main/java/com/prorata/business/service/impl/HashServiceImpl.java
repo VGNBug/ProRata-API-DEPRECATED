@@ -1,10 +1,13 @@
 package com.prorata.business.service.impl;
 
+import org.springframework.stereotype.Component;
+
 import com.prorata.business.service.HashService;
 
 /**
  * {@inheritDoc}
  */
+@Component
 public class HashServiceImpl implements HashService
 {
 	/**
