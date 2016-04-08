@@ -4,16 +4,35 @@
  */
 package com.prorata.business.service.impl;
 
-import com.prorata.business.service.*;
-import com.prorata.data.repository.jpa.*;
-import com.prorata.model.jpa.*;
-import java.util.*;
-import javax.annotation.*;
-import org.apache.commons.logging.*;
-import org.springframework.dao.*;
-import org.springframework.stereotype.*;
-import org.springframework.transaction.annotation.*;
-import org.hibernate.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hibernate.Hibernate;
+import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.prorata.business.service.ProrataUserService;
+import com.prorata.data.repository.jpa.AccountJpaRepository;
+import com.prorata.data.repository.jpa.BankJpaRepository;
+import com.prorata.data.repository.jpa.EmployerJpaRepository;
+import com.prorata.data.repository.jpa.EmploymentJpaRepository;
+import com.prorata.data.repository.jpa.ProrataUserJpaRepository;
+import com.prorata.data.repository.jpa.SubscriptionJpaRepository;
+import com.prorata.data.repository.jpa.SubscriptionTypeJpaRepository;
+import com.prorata.data.repository.jpa.UserContactJpaRepository;
+import com.prorata.model.jpa.AccountEntity;
+import com.prorata.model.jpa.EmployerEntity;
+import com.prorata.model.jpa.EmploymentEntity;
+import com.prorata.model.jpa.ProrataUserEntity;
+import com.prorata.model.jpa.SubscriptionEntity;
+import com.prorata.model.jpa.SubscriptionTypeEntity;
+import com.prorata.model.jpa.UserContactEntity;
 
 /**
  * Implementation of {@link com.prorata.buisiness.service.ProrataUserService
