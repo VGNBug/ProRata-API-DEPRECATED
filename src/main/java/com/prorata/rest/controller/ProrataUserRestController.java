@@ -15,9 +15,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.prorata.business.service.ProrataUserService;
 import com.prorata.model.jpa.ProrataUserEntity;
+import com.prorata.business.service.HashService;
 import com.prorata.rest.exception.proratauser.ProrataUserNotFoundException;
 import com.prorata.rest.exception.proratauser.ProrataUserServiceErrorException;
-import com.prorata.business.service.*;
 
 @RestController
 @RequestMapping(value = "/prorataUser")
