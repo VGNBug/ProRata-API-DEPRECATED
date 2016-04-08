@@ -18,4 +18,4 @@ deployment:
 
 general:
   artifacts:
-    - "~/build/reports/tests/index.html" # Gradle test results
+    - "reports/tests/index.html" # Gradle test results
