@@ -18,4 +18,4 @@ deployment:
 
 general:
   artifacts:
-    -/home/ubuntu/ProRata-API/build/reports/tests/index.html
+    -"/home/ubuntu/ProRata-API/build/reports/tests/index.html"
