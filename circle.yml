@@ -15,11 +15,7 @@ deployment:
     branch: integration
     heroku:
       appname: prorata-api-staging
-      
-general:
-  build_dir: build
 
 general:
-  artifacts:
-  - "~/ubuntu/ProRata-API/build/reports/tests/index.html"
-#    - "reports/tests/index.html" # Gradle test results
+	artifacts:
+		- "build/reports/tests" # preserve the generated HTML test reports
