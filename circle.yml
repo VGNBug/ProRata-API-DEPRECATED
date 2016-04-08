@@ -15,7 +15,7 @@ deployment:
     branch: integration
     heroku:
       appname: prorata-api-staging
-
+      
 general:
-	artifacts:
-		- "build/reports/tests" # preserve the generated HTML test reports
+    artifacts:
+    - "build/reports/tests" # preserve the generated HTML test reports
