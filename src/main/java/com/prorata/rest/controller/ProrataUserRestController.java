@@ -119,7 +119,7 @@ public class ProrataUserRestController
 	@RequestMapping(method = RequestMethod.PUT)
 	@ResponseStatus(HttpStatus.OK)
 	public ProrataUserEntity update(final @RequestBody Map<String, Object> userMap)
-			throws ProrataUserServiceErrorException
+	throws ProrataUserNotFoundException
 	{
 		prorataUserService.update(mapper.convertValue(userMap, ProrataUserEntity.class));
 		return prorataUserService.signIn((String)userMap.get("email"), (String)userMap.get("password"));
@@ -137,7 +137,7 @@ public class ProrataUserRestController
 	 */
 	@RequestMapping(method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void delete(final @RequestBody Map<String, Object> credentials) throws ProrataUserServiceErrorException
+	public void delete(final @RequestBody Map<String, Object> credentials) throws ProrataUserNotFoundException
 	{
 		prorataUserService.delete(mapper.convertValue(credentials, ProrataUserEntity.class));
 	}
