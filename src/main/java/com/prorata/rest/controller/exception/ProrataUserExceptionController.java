@@ -8,10 +8,18 @@ import com.prorata.rest.exception.proratauser.*;
 public class ProrataUserExceptionController {
 
     @ExceptionHandler(ProrataUserNotFoundException.class)
-    public ResponseEntity handleException(ProrataUserNotFoundException e) {
+    public ResponseEntity handleProrataUserNotFoundException(ProrataUserNotFoundException e) {
         // log exception
         return ResponseEntity
 			.status(HttpStatus.NOT_FOUND)
 			.body(e.getMessage());
-    }        
+    }
+
+	@ExceptionHandler(BadSignInCredentialsException.class)
+    public ResponseEntity handleBadSignInCredentialsException(BadSignInCredentialsException e) {
+        // log exception
+        return ResponseEntity
+			.status(HttpStatus.NOT_FOUND)
+			.body(e.getMessage());
+    }
 }
