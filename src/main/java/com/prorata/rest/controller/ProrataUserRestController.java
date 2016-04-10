@@ -17,7 +17,7 @@ import com.prorata.business.service.ProrataUserService;
 import com.prorata.model.jpa.ProrataUserEntity;
 import com.prorata.business.service.HashService;
 import com.prorata.rest.exception.proratauser.ProrataUserNotFoundException;
-import com.prorata.rest.exception.proratauser.ProrataUserServiceErrorException;
+import com.prorata.rest.exception.proratauser.*;
 
 @RestController
 @RequestMapping(value = "/prorataUser")
@@ -50,7 +50,7 @@ public class ProrataUserRestController
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
 	public ProrataUserEntity create(final @RequestBody Map<String, Object> userMap)
-			throws ProrataUserServiceErrorException
+			throws ProrataUserServiceException
 	{
 		prorataUserService.create(mapper.convertValue(userMap, ProrataUserEntity.class));
 		return prorataUserService.signIn((String)userMap.get("email"), (String)userMap.get("password"));
