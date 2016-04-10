@@ -33,6 +33,7 @@ import com.prorata.model.jpa.ProrataUserEntity;
 import com.prorata.model.jpa.SubscriptionEntity;
 import com.prorata.model.jpa.SubscriptionTypeEntity;
 import com.prorata.model.jpa.UserContactEntity;
+import com.prorata.rest.exception.proratauser.*;
 
 /**
  * Implementation of {@link com.prorata.buisiness.service.ProrataUserService
@@ -260,8 +261,8 @@ public class ProrataUserServiceImpl implements ProrataUserService
 			}
 			else
 			{
-				stateMessage = "User was not recovered successfully.";
-				DataRetrievalFailureException e = new DataRetrievalFailureException(stateMessage);
+				stateMessage = "Sign in attempt failed because the user supplied incorrect credentials: " + getUserForErrorLogging(email, password);
+				BadSignInCredentialsException e = new BadSignInCredentialsException();
 				LOGGER.error(e);
 				throw e;
 			}
@@ -558,5 +559,38 @@ public class ProrataUserServiceImpl implements ProrataUserService
 		}
 
 		return user;
+	}
+	
+	private String getUserForErrorLogging(String email, String password)
+	{
+		StringBuilder msg = new StringBuilder();
+		
+		ProrataUserEntity entity = prorataUserJpaRepository.findByEmail(email);
+		
+		if(entity != null)
+		{
+			//@formatter:off
+			msg.append(
+				         "\nA ProrataUser was found with the email supplied by the client: " 
+				         + email
+		     	         + "\nThe ID of the user is " + entity.getProrataUserId()
+				      );
+			//@formatter:on
+				
+			if (password.equals(entity.getPassword()))
+			{
+				msg.append("\nThe ProrataUser's password matches the password supplied by the client");
+			} 
+		    	else
+		    {
+			   	msg.append("\nThe password supplied by the client does not matches the password associated with the user");
+		    }
+		}
+		else
+		{
+			msg.append("\nNo user with the email " + email + " could be found");
+		}
+		
+		return msg.toString();
 	}
 }
