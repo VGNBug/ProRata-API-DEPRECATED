@@ -11,10 +11,13 @@ It can be forked and refactored for use as the basis of other projects.
 This is a quickstart guide to help you get up and running with development of the ProRata-API.
 
 ### Prerequisites ###
-You will need to have set up the ProRata-Database, which currently uses PostgreSQL 9.4.
+1. You will need to have installed [PostgreSQL](https://www.postgresql.org/download/) and set up the [ProRata-Database](https://github.com/VGNBug/ProRata-Database/).
 
-- I recommend using [IntelliJ IDEA](https://download.jetbrains.com/idea/ideaIU-2016.2.4.exe) for development. 
-- Import the project into IDEA, and you should be ready to go!
+2. Currently, the project uses [Java 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html), which you will need to install. Bear in mind that if you are using Windows, you will need to have set your JAVA_HOME environment variable prior to proceeding further.
+
+3. You will need install and familiarise yourself with [Gradle](https://gradle.org/gradle-download/). Windows users will need to set the GRADLE_HOME environment variable.
+
+2. I recommend using [IntelliJ IDEA](https://download.jetbrains.com/idea/ideaIU-2016.2.4.exe) for development. Once you have done so, import the project into IDEA, and you should be ready to go!
 
 #### IntelliJ IDEA database connection ####
 One of the benefits of IntelliJ IDEA is easy database management from the IDE. This can be achieved in the following way:
@@ -29,6 +32,21 @@ One of the benefits of IntelliJ IDEA is easy database management from the IDE. T
   * __URL:__ jdbc:postgresql://localhost:5432/postgres
 4. Ensure that you have downloaded the PostgreSQL driver JAR for use with IntelliJ IDEA. This can be achieved from within the same new database connection window, by clicking the "PostgreSQL" link, and in the new dialogue clicking the "Download" button under the "Driver files" section.
 5. It's a good idea to test your connection before saving the new connection. This can be done in the credentials dialogue by using the "Test Connection" button.
+
+## Running and testing the application locally ##
+There are two ways of running and deploying the application; using IntelliJ IDEA, and using the command line.
+
+### Locally building and deploying using the command line ###
+There are two steps to this process:
+
+1. Build the executable 'fat JAR' locally using the gradle command `gradle build`.
+2. Run the command by navigating to the gradle build directory and running the JAR using the JVM. Such an operation may look like so:
+
+`java -jar ./build/libs/prorata-api-0.0.1-SNAPSHOT.jar`
+
+3. This should have deployed the application using an embedded Tomcat instance. If you navigate to `http://localhost:8080/`, you should see a default page for the API.
+
+### Locally building and deploying using 
 
 ## Deployment ##
 Currently, all that is needed to deploy to Heroku is to push to master! Github will push new commits out to CircleCI, which will push successful builds to Heroku.
